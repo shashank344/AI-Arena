@@ -19,7 +19,10 @@ export async function generateComponentAction(prompt: string) {
     return response.component;
   } catch (error) {
     console.error("Error generating component:", error);
-    return "Error: Could not generate the component.";
+    if (error instanceof Error) {
+      throw new Error(`Could not generate the component: ${error.message}`);
+    }
+    throw new Error("An unknown error occurred while generating the component.");
   }
 }
 
@@ -36,7 +39,10 @@ export async function generateUiAction(prompt: string) {
     return response.component;
   } catch (error) {
     console.error("Error generating UI:", error);
-    return "Error: Could not generate the UI component.";
+    if (error instanceof Error) {
+      throw new Error(`Could not generate the UI component: ${error.message}`);
+    }
+    throw new Error("An unknown error occurred while generating the UI component.");
   }
 }
 
@@ -51,6 +57,9 @@ export async function getRecommendationAction(prompt: string) {
     return result;
   } catch (error) {
     console.error("Error getting recommendations:", error);
-    return { recommendations: "Error: Could not fetch recommendations." };
+    if (error instanceof Error) {
+      throw new Error(`Could not fetch recommendations: ${error.message}`);
+    }
+    throw new Error("An unknown error occurred while fetching recommendations.");
   }
 }

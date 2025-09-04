@@ -113,9 +113,18 @@ export function MainPage() {
       return;
     }
     startRecommendationTransition(async () => {
-      setRecommendation(null);
-      const result = await getRecommendationAction(input);
-      setRecommendation(result.recommendations);
+      try {
+        setRecommendation(null);
+        const result = await getRecommendationAction(input);
+        setRecommendation(result.recommendations);
+      } catch (error) {
+        const err = error as Error;
+        toast({
+            variant: 'destructive',
+            title: 'Error getting recommendations',
+            description: err.message,
+        });
+      }
     });
   };
 
