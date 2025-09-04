@@ -18,7 +18,10 @@ interface ChatMessageProps {
 
 const textOnlyPrompts = [
     'What is the meaning of the word:',
-    'Generate description for'
+    'Generate description for',
+    'Summarize the following text into three key points:',
+    'Explain the following code snippet in plain English',
+    'Create a short, engaging Twitter post about the following topic:',
 ];
 
 export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
