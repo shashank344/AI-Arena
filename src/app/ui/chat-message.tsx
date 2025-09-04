@@ -16,6 +16,11 @@ interface ChatMessageProps {
   userPrompt: string;
 }
 
+const textOnlyPrompts = [
+    'What is the meaning of the word:',
+    'Generate description for'
+];
+
 export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
@@ -50,7 +55,7 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
   };
   
   const isUser = message.role === 'user';
-  const isDefinition = userPrompt.includes('What is the meaning of the word:');
+  const isTextResponse = !isUser && textOnlyPrompts.some(p => userPrompt.startsWith(p));
 
   return (
     <div className={`flex items-start gap-4 ${isUser ? 'justify-end' : ''}`}>
@@ -66,7 +71,7 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
           <CardContent className="p-3 text-sm">
             {isUser ? (
                <p>{message.content}</p>
-            ) : isDefinition ? (
+            ) : isTextResponse ? (
                 <p>{message.content}</p>
             ) : (
                 <div className="prose prose-sm dark:prose-invert text-foreground">
