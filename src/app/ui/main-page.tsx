@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { models, templates } from '@/data/mock-data';
 import { generateComponentAction, getRecommendationAction, generateUiAction, generateDescriptionAction } from '@/app/actions';
-import { SendHorizonal, Bot, Sparkles, Loader2, Menu, Settings, FileJson, BrainCircuit, Wand2, ShoppingBag } from 'lucide-react';
+import { SendHorizonal, Bot, Sparkles, Loader2, Menu, Settings, FileJson, BrainCircuit, Wand2, ShoppingBag, User } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input as UiInput } from '@/components/ui/input';
@@ -169,7 +169,7 @@ export function MainPage() {
     <div className="flex flex-col gap-6 p-4 bg-card md:bg-transparent h-full">
       <h1 className="font-headline text-2xl font-bold tracking-tighter flex items-center gap-2">
         <Bot className="text-primary" />
-        AI Arena
+        Aether Interface
       </h1>
       <div className="space-y-4">
         <div className="space-y-2">
@@ -307,7 +307,7 @@ export function MainPage() {
               <LeftPanel />
             </SheetContent>
           </Sheet>
-          <h1 className="font-headline text-lg font-bold tracking-tighter">AI Arena</h1>
+          <h1 className="font-headline text-lg font-bold tracking-tighter">Aether Interface</h1>
         </div>
         <Sheet>
           <SheetTrigger asChild>

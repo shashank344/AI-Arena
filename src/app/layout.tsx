@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AI Arena',
+  title: 'Aether Interface',
   description: 'A polished AI interface with essential features.',
 };
 
