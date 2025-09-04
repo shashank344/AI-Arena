@@ -2,7 +2,7 @@
 
 import type { FC } from 'react';
 import { Bot, User, Copy, Download, Check } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -13,18 +13,11 @@ interface ChatMessageProps {
     role: 'user' | 'assistant';
     content: string;
   };
+  isComponent: boolean;
   userPrompt: string;
 }
 
-const textOnlyPrompts = [
-    'What is the meaning of the word:',
-    'Generate description for',
-    'Summarize the following text into three key points:',
-    'Explain the following code snippet in plain English',
-    'Create a short, engaging Twitter post about the following topic:',
-];
-
-export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
+export const ChatMessage: FC<ChatMessageProps> = ({ message, isComponent, userPrompt }) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
 
@@ -58,7 +51,6 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
   };
   
   const isUser = message.role === 'user';
-  const isTextResponse = !isUser && textOnlyPrompts.some(p => userPrompt.startsWith(p));
 
   return (
     <div className={`flex items-start gap-4 ${isUser ? 'justify-end' : ''}`}>
@@ -74,9 +66,7 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
           <CardContent className="p-3 text-sm">
             {isUser ? (
                <p>{message.content}</p>
-            ) : isTextResponse ? (
-                <p>{message.content}</p>
-            ) : (
+            ) : isComponent ? (
                 <div className="prose prose-sm dark:prose-invert text-foreground">
                     <div className="bg-background dark:bg-black/50 rounded-md">
                         <div className="flex items-center justify-between px-3 py-1.5 border-b">
@@ -109,6 +99,8 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
                         <pre className="p-3 overflow-x-auto"><code className="font-code text-xs">{message.content}</code></pre>
                     </div>
                 </div>
+            ) : (
+                <p>{message.content}</p>
             )}
           </CardContent>
         </Card>

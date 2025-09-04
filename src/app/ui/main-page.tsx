@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 type Message = {
   role: 'user' | 'assistant';
   content: string;
+  isComponent?: boolean;
 };
 
 export function MainPage() {
@@ -68,16 +69,12 @@ export function MainPage() {
     startTransition(async () => {
       try {
         const response = await generateComponentAction(input);
-        const assistantMessage: Message = { role: 'assistant', content: response };
+        const assistantMessage: Message = { role: 'assistant', content: response, isComponent: true };
         setMessages(prev => [...prev, assistantMessage]);
       } catch (error) {
         const err = error as Error;
-        toast({
-          variant: 'destructive',
-          title: 'Error generating response',
-          description: err.message,
-        });
-        setMessages(prev => prev.slice(0, -1)); // Remove the user message if submission failed
+        const assistantMessage: Message = { role: 'assistant', content: err.message };
+        setMessages(prev => [...prev, assistantMessage]);
       }
     });
 
@@ -92,16 +89,12 @@ export function MainPage() {
     startTransition(async () => {
       try {
         const response = await generateUiAction(input);
-        const assistantMessage: Message = { role: 'assistant', content: response };
+        const assistantMessage: Message = { role: 'assistant', content: response, isComponent: true };
         setMessages(prev => [...prev, assistantMessage]);
       } catch (error) {
         const err = error as Error;
-        toast({
-          variant: 'destructive',
-          title: 'Error generating UI',
-          description: err.message,
-        });
-        setMessages(prev => prev.slice(0, -1));
+        const assistantMessage: Message = { role: 'assistant', content: err.message };
+        setMessages(prev => [...prev, assistantMessage]);
       }
     });
     setInput('');
@@ -152,12 +145,8 @@ export function MainPage() {
         setMessages(prev => [...prev, assistantMessage]);
       } catch (error) {
         const err = error as Error;
-        toast({
-          variant: 'destructive',
-          title: 'Error generating description',
-          description: err.message,
-        });
-        setMessages(prev => prev.slice(0, -1));
+        const assistantMessage: Message = { role: 'assistant', content: err.message };
+        setMessages(prev => [...prev, assistantMessage]);
       }
     });
 
@@ -327,7 +316,12 @@ export function MainPage() {
         <main className="flex-1 flex flex-col">
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6">
             {messages.map((msg, index) => (
-              <ChatMessage key={index} message={msg} userPrompt={messages[index-1]?.content ?? ''}/>
+              <ChatMessage 
+                key={index} 
+                message={msg}
+                isComponent={!!msg.isComponent}
+                userPrompt={messages.findLast(m => m.role === 'user')?.content ?? ''}
+              />
             ))}
             {isPending && (
               <div className="flex items-center gap-4">
