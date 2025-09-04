@@ -46,7 +46,7 @@ To run both, open two separate terminal windows.
 npm run dev
 ```
 
-The application will be available at [http://localhost:9002](http://localhost:9002).
+The application will be available at [http://localhost:9003](http://localhost:9003).
 
 **In your second terminal, run the Genkit flows:**
 
