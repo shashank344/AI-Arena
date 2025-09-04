@@ -27,4 +27,9 @@ export const templates = [
     name: 'Generate Social Media Post',
     content: 'Create a short, engaging Twitter post about the following topic: \n\n',
   },
+  {
+    id: 'define-word',
+    name: 'Define a Word',
+    content: 'What is the meaning of the word: \n\n',
+  },
 ];
