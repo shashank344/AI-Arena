@@ -4,6 +4,7 @@
 import { formatLLMResponse } from '@/ai/flows/format-llm-responses';
 import { recommendTools } from '@/ai/flows/ai-powered-tool-recommendation';
 import { generateComponent } from '@/ai/flows/generate-component';
+import { routePrompt } from '@/ai/flows/prompt-router';
 import { z } from 'zod';
 
 const promptSchema = z.string().min(1, 'Prompt cannot be empty.');
@@ -15,12 +16,13 @@ export async function generateComponentAction(prompt: string) {
   }
 
   try {
-    const response = await generateComponent({ prompt });
+    const { componentType } = await routePrompt({ prompt });
+    const response = await generateComponent({ prompt, componentType });
     return response.component;
   } catch (error) {
     console.error("Error generating component:", error);
     if (error instanceof Error) {
-      throw new Error(`Could not generate the component: ${error.message}`);
+      throw error;
     }
     throw new Error("An unknown error occurred while generating the component.");
   }
@@ -34,13 +36,14 @@ export async function generateUiAction(prompt: string) {
 
   try {
     const response = await generateComponent({ 
-      prompt: `Create a new React component for a UI element based on the following description: ${prompt}. The component should be visually appealing and ready for production.`
+      prompt: `Create a new React component for a UI element based on the following description: ${prompt}. The component should be visually appealing and ready for production.`,
+      componentType: 'ui-element'
     });
     return response.component;
   } catch (error) {
     console.error("Error generating UI:", error);
     if (error instanceof Error) {
-      throw new Error(`Could not generate the UI component: ${error.message}`);
+      throw error;
     }
     throw new Error("An unknown error occurred while generating the UI component.");
   }

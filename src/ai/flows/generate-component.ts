@@ -12,6 +12,7 @@ import {z} from 'genkit';
 
 const GenerateComponentInputSchema = z.object({
   prompt: z.string().describe('A description of the component to generate.'),
+  componentType: z.string().describe('The type of component to generate (e.g., "form", "card", "page"). This will be determined by a router flow.'),
 });
 export type GenerateComponentInput = z.infer<typeof GenerateComponentInputSchema>;
 
@@ -39,6 +40,8 @@ const generateComponentPrompt = ai.definePrompt({
   The component should use Tailwind CSS for styling and leverage shadcn/ui components and lucide-react icons where appropriate.
   Ensure the component is well-structured, follows modern React best practices, and is production-ready.
   Do not include any 'use client' directives. Components should be server components by default unless client-side interactivity is absolutely required.
+
+  The user wants to create a '{{componentType}}' component. Use this as a hint to generate the most relevant component.
 
   Prompt:
   {{{prompt}}}`,
