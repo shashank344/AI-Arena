@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/format-llm-responses.ts';
 import '@/ai/flows/ai-powered-tool-recommendation.ts';
+import '@/ai/flows/generate-component.ts';

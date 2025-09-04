@@ -2,18 +2,19 @@
 
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { models, templates } from '@/data/mock-data';
-import { generateResponseAction, getRecommendationAction } from '@/app/actions';
-import { SendHorizonal, Bot, Sparkles, Loader2, Menu, Settings, FileJson, BrainCircuit } from 'lucide-react';
+import { generateComponentAction, getRecommendationAction, generateUiAction } from '@/app/actions';
+import { SendHorizonal, Bot, Sparkles, Loader2, Menu, Settings, FileJson, BrainCircuit, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ChatMessage } from './chat-message';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 type Message = {
   role: 'user' | 'assistant';
@@ -26,7 +27,7 @@ export function MainPage() {
   ]);
   const [input, setInput] = useState('');
   const [temperature, setTemperature] = useState([0.7]);
-  const [maxTokens, setMaxTokens] = useState(1024);
+  const [maxTokens, setMaxTokens] = useState(2048);
   const [selectedModel, setSelectedModel] = useState(models[0].id);
   const [recommendation, setRecommendation] = useState<string | null>(null);
   
@@ -61,7 +62,7 @@ export function MainPage() {
     
     startTransition(async () => {
       try {
-        const response = await generateResponseAction(input);
+        const response = await generateComponentAction(input);
         const assistantMessage: Message = { role: 'assistant', content: response };
         setMessages(prev => [...prev, assistantMessage]);
       } catch (error) {
@@ -77,6 +78,29 @@ export function MainPage() {
 
     setInput('');
   };
+
+  const handleGenerateUi = () => {
+    if (!input.trim() || isPending) return;
+    const userMessage: Message = { role: 'user', content: `Generate UI for: ${input}` };
+    setMessages(prev => [...prev, userMessage]);
+
+    startTransition(async () => {
+      try {
+        const response = await generateUiAction(input);
+        const assistantMessage: Message = { role: 'assistant', content: response };
+        setMessages(prev => [...prev, assistantMessage]);
+      } catch (error) {
+        const err = error as Error;
+        toast({
+          variant: 'destructive',
+          title: 'Error generating UI',
+          description: err.message,
+        });
+        setMessages(prev => prev.slice(0, -1));
+      }
+    });
+    setInput('');
+  }
 
   const handleGetRecommendation = () => {
     if (!input.trim()) {
@@ -147,47 +171,56 @@ export function MainPage() {
 
   const RightPanel = () => (
     <div className="flex flex-col gap-6 p-4 bg-card md:bg-transparent h-full">
-      <h2 className="font-headline text-xl font-bold tracking-tighter">Parameters</h2>
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label htmlFor="temperature">Temperature</Label>
-            <span className="text-sm text-muted-foreground">{temperature[0].toFixed(2)}</span>
-          </div>
-          <Slider id="temperature" min={0} max={1} step={0.01} value={temperature} onValueChange={setTemperature} />
-          <p className="text-xs text-muted-foreground">Controls randomness. Lower is more deterministic.</p>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="max-tokens">Max Tokens</Label>
-          <input
-            id="max-tokens"
-            type="number"
-            value={maxTokens}
-            onChange={e => setMaxTokens(Number(e.target.value))}
-            className="w-full p-2 border rounded-md bg-transparent text-sm"
-          />
-          <p className="text-xs text-muted-foreground">The maximum number of tokens to generate.</p>
-        </div>
-      </div>
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="font-headline text-lg flex items-center gap-2">
-            <Sparkles className="text-primary h-5 w-5" />
-            Tool Recommendation
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">Get AI-powered suggestions for the best tools and parameters for your prompt.</p>
-          <Button onClick={handleGetRecommendation} disabled={isRecommendationPending || !input.trim()} className="w-full">
-            {isRecommendationPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Get Recommendations'}
-          </Button>
-          {recommendation && (
-            <div className="mt-4 p-3 bg-muted rounded-md text-sm">
-              <p>{recommendation}</p>
+      <Tabs defaultValue="parameters">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="parameters">Parameters</TabsTrigger>
+          <TabsTrigger value="tools">Tools</TabsTrigger>
+        </TabsList>
+        <TabsContent value="parameters" className="mt-6">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="temperature">Temperature</Label>
+                <span className="text-sm text-muted-foreground">{temperature[0].toFixed(2)}</span>
+              </div>
+              <Slider id="temperature" min={0} max={1} step={0.01} value={temperature} onValueChange={setTemperature} />
+              <p className="text-xs text-muted-foreground">Controls randomness. Lower is more deterministic.</p>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <div className="space-y-2">
+              <Label htmlFor="max-tokens">Max Tokens</Label>
+              <input
+                id="max-tokens"
+                type="number"
+                value={maxTokens}
+                onChange={e => setMaxTokens(Number(e.target.value))}
+                className="w-full p-2 border rounded-md bg-transparent text-sm"
+              />
+              <p className="text-xs text-muted-foreground">The maximum number of tokens to generate.</p>
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="tools" className="mt-6">
+            <Card>
+                <CardHeader>
+                <CardTitle className="font-headline text-lg flex items-center gap-2">
+                    <Sparkles className="text-primary h-5 w-5" />
+                    Tool Recommendation
+                </CardTitle>
+                </CardHeader>
+                <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">Get AI-powered suggestions for the best tools and parameters for your prompt.</p>
+                <Button onClick={handleGetRecommendation} disabled={isRecommendationPending || !input.trim()} className="w-full">
+                    {isRecommendationPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Get Recommendations'}
+                </Button>
+                {recommendation && (
+                    <div className="mt-4 p-3 bg-muted rounded-md text-sm">
+                    <p>{recommendation}</p>
+                    </div>
+                )}
+                </CardContent>
+            </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 
@@ -245,7 +278,7 @@ export function MainPage() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 placeholder="Type your prompt here..."
-                className="pr-16 min-h-[60px] resize-none"
+                className="pr-28 min-h-[60px] resize-none"
                 onKeyDown={e => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -253,15 +286,26 @@ export function MainPage() {
                   }
                 }}
               />
-              <Button
-                type="submit"
-                size="icon"
-                className="absolute top-1/2 right-3 -translate-y-1/2"
-                disabled={!input.trim() || isPending}
-                aria-label="Send message"
-              >
-                {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <SendHorizonal className="h-4 w-4" />}
-              </Button>
+              <div className="absolute top-1/2 right-3 -translate-y-1/2 flex gap-2">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={handleGenerateUi}
+                  disabled={!input.trim() || isPending}
+                  aria-label="Generate UI"
+                >
+                  <Wand2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="submit"
+                  size="icon"
+                  disabled={!input.trim() || isPending}
+                  aria-label="Send message"
+                >
+                  {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <SendHorizonal className="h-4 w-4" />}
+                </Button>
+              </div>
             </form>
           </div>
         </main>
