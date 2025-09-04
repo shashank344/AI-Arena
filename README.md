@@ -20,7 +20,7 @@ You'll need a Gemini API key to use the AI features.
 3.  Open the `.env` file and add your API key:
 
     ```
-    GEMINI_API_KEY=<your-api-key-here>
+    GEMINI_API_KEY=AIzaSyATpZaQyNHAKCuf-C_wevaCAhMxU6homu8
     ```
 
     Replace `<your-api-key-here>` with the key you obtained from Google AI Studio.

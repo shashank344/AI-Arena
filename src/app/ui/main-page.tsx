@@ -158,7 +158,7 @@ export function MainPage() {
     <div className="flex flex-col gap-6 p-4 bg-card md:bg-transparent h-full">
       <h1 className="font-headline text-2xl font-bold tracking-tighter flex items-center gap-2">
         <Bot className="text-primary" />
-        Aether Interface
+        AI Arena
       </h1>
       <div className="space-y-4">
         <div className="space-y-2">
@@ -296,7 +296,7 @@ export function MainPage() {
               <LeftPanel />
             </SheetContent>
           </Sheet>
-          <h1 className="font-headline text-lg font-bold tracking-tighter">Aether Interface</h1>
+          <h1 className="font-headline text-lg font-bold tracking-tighter">AI Arena</h1>
         </div>
         <Sheet>
           <SheetTrigger asChild>
