@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { models, templates } from '@/data/mock-data';
-import { generateComponentAction, getRecommendationAction, generateUiAction } from '@/app/actions';
-import { SendHorizonal, Bot, Sparkles, Loader2, Menu, Settings, FileJson, BrainCircuit, Wand2 } from 'lucide-react';
+import { generateComponentAction, getRecommendationAction, generateUiAction, generateDescriptionAction } from '@/app/actions';
+import { SendHorizonal, Bot, Sparkles, Loader2, Menu, Settings, FileJson, BrainCircuit, Wand2, ShoppingBag } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Input as UiInput } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -31,6 +32,9 @@ export function MainPage() {
   const [maxTokens, setMaxTokens] = useState(2048);
   const [selectedModel, setSelectedModel] = useState(models[0].id);
   const [recommendation, setRecommendation] = useState<string | null>(null);
+
+  const [productName, setProductName] = useState('');
+  const [productKeywords, setProductKeywords] = useState('');
   
   const [isPending, startTransition] = useTransition();
   const [isRecommendationPending, startRecommendationTransition] = useTransition();
@@ -128,6 +132,39 @@ export function MainPage() {
     });
   };
 
+  const handleGenerateDescription = () => {
+    if (!productName.trim() || !productKeywords.trim()) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Fields',
+        description: 'Please enter a product name and keywords.',
+      });
+      return;
+    }
+
+    const userMessage: Message = { role: 'user', content: `Generate description for ${productName}` };
+    setMessages(prev => [...prev, userMessage]);
+
+    startTransition(async () => {
+      try {
+        const response = await generateDescriptionAction({ productName, keywords: productKeywords });
+        const assistantMessage: Message = { role: 'assistant', content: response };
+        setMessages(prev => [...prev, assistantMessage]);
+      } catch (error) {
+        const err = error as Error;
+        toast({
+          variant: 'destructive',
+          title: 'Error generating description',
+          description: err.message,
+        });
+        setMessages(prev => prev.slice(0, -1));
+      }
+    });
+
+    setProductName('');
+    setProductKeywords('');
+  }
+
   const LeftPanel = () => (
     <div className="flex flex-col gap-6 p-4 bg-card md:bg-transparent h-full">
       <h1 className="font-headline text-2xl font-bold tracking-tighter flex items-center gap-2">
@@ -182,9 +219,10 @@ export function MainPage() {
   const RightPanel = () => (
     <div className="flex flex-col gap-6 p-4 bg-card md:bg-transparent h-full">
       <Tabs defaultValue="parameters">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="parameters">Parameters</TabsTrigger>
           <TabsTrigger value="tools">Tools</TabsTrigger>
+          <TabsTrigger value="product">Product</TabsTrigger>
         </TabsList>
         <TabsContent value="parameters" className="mt-6">
           <div className="space-y-6">
@@ -198,7 +236,7 @@ export function MainPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="max-tokens">Max Tokens</Label>
-              <input
+              <UiInput
                 id="max-tokens"
                 type="number"
                 value={maxTokens}
@@ -227,6 +265,29 @@ export function MainPage() {
                     <p>{recommendation}</p>
                     </div>
                 )}
+                </CardContent>
+            </Card>
+        </TabsContent>
+        <TabsContent value="product" className="mt-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-lg flex items-center gap-2">
+                        <ShoppingBag className="text-primary h-5 w-5" />
+                        Product Description
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="product-name">Product Name</Label>
+                        <UiInput id="product-name" value={productName} onChange={e => setProductName(e.target.value)} placeholder="e.g. Smart Watch" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="product-keywords">Keywords</Label>
+                        <UiInput id="product-keywords" value={productKeywords} onChange={e => setProductKeywords(e.target.value)} placeholder="e.g. fitness, waterproof, long battery" />
+                    </div>
+                    <Button onClick={handleGenerateDescription} disabled={isPending} className="w-full">
+                        {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Generate Description'}
+                    </Button>
                 </CardContent>
             </Card>
         </TabsContent>
