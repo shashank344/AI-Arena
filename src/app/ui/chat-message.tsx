@@ -50,6 +50,7 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
   };
   
   const isUser = message.role === 'user';
+  const isDefinition = userPrompt.startsWith('What is the meaning of the word:');
 
   return (
     <div className={`flex items-start gap-4 ${isUser ? 'justify-end' : ''}`}>
@@ -65,6 +66,8 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message, userPrompt }) => {
           <CardContent className="p-3 text-sm">
             {isUser ? (
                <p>{message.content}</p>
+            ) : isDefinition ? (
+                <p>{message.content}</p>
             ) : (
                 <div className="prose prose-sm dark:prose-invert text-foreground">
                     <div className="bg-background dark:bg-black/50 rounded-md">
