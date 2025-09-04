@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { models, templates } from '@/data/mock-data';
-import { generateComponentAction, getRecommendationAction, generateUiAction, generateDescriptionAction } from '@/app/actions';
+import { unifiedAction, getRecommendationAction, generateUiAction, generateDescriptionAction } from '@/app/actions';
 import { SendHorizonal, Bot, Sparkles, Loader2, Menu, Settings, FileJson, BrainCircuit, Wand2, ShoppingBag, User } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -68,8 +68,8 @@ export function MainPage() {
     
     startTransition(async () => {
       try {
-        const response = await generateComponentAction(input);
-        const assistantMessage: Message = { role: 'assistant', content: response, isComponent: true };
+        const response = await unifiedAction(input);
+        const assistantMessage: Message = { role: 'assistant', content: response.content, isComponent: response.isComponent };
         setMessages(prev => [...prev, assistantMessage]);
       } catch (error) {
         const err = error as Error;
