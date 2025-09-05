@@ -79,7 +79,7 @@ Based on this research, the following core features were chosen for AI Arena to 
 
 The design philosophy for AI Arena is centered on a clean, modern, and focused interface that prioritizes the user's interaction with the AI.
 
--   **Mockup Link**: [View the design mockup on Figma (Placeholder)](https://www.figma.com/proto/your-mockup-link-here)
+-   **Mockup Link**: https://www.figma.com/design/2YmIn7uvEWgjYZ85kNOmM3/AI-Arena?node-id=13-111&t=ACsOzn9IGhUilfkJ-1
 
 The visual design is implemented using **Tailwind CSS** and **ShadCN UI**, with a custom theme defined in `src/app/globals.css`. The mapping from our design principles to the Tailwind configuration is as follows:
 
