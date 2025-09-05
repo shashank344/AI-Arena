@@ -2,6 +2,8 @@
 
 AI Arena is a polished, feature-rich interface for interacting with generative AI models. This project was built to provide a seamless and intuitive experience for developers and enthusiasts to experiment with different AI models, fine-tune parameters, and generate high-quality outputs, from text to UI components.
 
+LIVE URL:-https://ai-arena-two.vercel.app/
+
 ## Getting Started
 
 To get the application running on your local machine, follow these steps.
